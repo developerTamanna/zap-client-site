@@ -1,0 +1,72 @@
+import React from 'react';
+import profast from '../../../assets/logo.png';
+import { FcGoogle } from 'react-icons/fc';
+
+const Login = () => {
+  return (
+    /* Register ডেভ‑কার্ডের মতোই সাদা কার্ড, p‑10, shadow */
+    <div className="w-full max-w-sm bg-white p-10 rounded-lg shadow-lg">
+      {/* Logo + Brand text */}
+      <div className="flex items-center gap-2 text-xl font-bold mb-6">
+        <img src={profast} alt="Profast Logo" className="h-8" />
+        <h2>Profast</h2>
+      </div>
+
+      {/* Title + subtitle */}
+      <h2 className="text-2xl font-bold mb-2">Welcome Back</h2>
+      <p className="mb-6 text-sm text-gray-500">Login with Profast</p>
+
+      {/* Form */}
+      <form className="space-y-4">
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="w-full px-4 py-2 border rounded"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="w-full px-4 py-2 border rounded"
+          required
+        />
+
+        {/* Forgot‑password link */}
+        <div className="text-right">
+          <span className="text-sm text-lime-600 cursor-pointer hover:underline">
+            Forgot password?
+          </span>
+        </div>
+
+        {/* Login button */}
+        <button
+          type="submit"
+          className="w-full py-2 bg-lime-400 hover:bg-lime-500 rounded text-white font-semibold"
+        >
+          Login
+        </button>
+      </form>
+
+      {/* Register link */}
+      <p className="text-sm mt-4">
+        Don&rsquo;t have an account?{' '}
+        <span className="text-lime-600 cursor-pointer font-medium hover:underline">
+          Register
+        </span>
+      </p>
+
+      {/* Divider */}
+      <div className="my-4 text-center text-gray-400">Or</div>
+
+      {/* Google login */}
+      <button className="w-full flex items-center justify-center gap-2 py-2 border rounded bg-gray-100 hover:bg-gray-200">
+        <FcGoogle className="w-5 h-5" />
+        Login with Google
+      </button>
+    </div>
+  );
+};
+
+export default Login;
