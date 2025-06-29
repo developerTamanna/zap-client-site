@@ -14,7 +14,7 @@ import Contact from '../pages/Contact/Contact';
 import AboutUs from '../pages/AboutUs/AboutUs';
 import Services from '../pages/Services/Services';
 import AddParcel from '../pages/AddParcel/AddParcel';
-
+import PrivateRoutes from '../routes/PrivateRouts'
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'pricing',
-        Component: Pricing
+        Component: Pricing,
       },
       {
         path: 'contact',
@@ -55,8 +55,14 @@ export const router = createBrowserRouter([
       },
       {
         path: 'add-parcel',
-        Component: AddParcel,
-      }
+        // Component: AddParcel,
+        element: (
+          <PrivateRoutes>
+            <AddParcel />
+          </PrivateRoutes>
+        ),
+        loader: () => fetch('./serviceCenter.json'),
+      },
     ],
   },
   {
