@@ -1,10 +1,26 @@
-import React from 'react';
-import profast from '../../../assets/logo.png';
+import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
+import profast from '../../../assets/logo.png';
+import { Link } from 'react-router';
+import UseAuth from '../../../hooks/UseAuth';
 
 const Login = () => {
+  const { googleSignin } = UseAuth();
+  const handleGoogleSignIn = () => {
+    googleSignin()
+      .then((result) => {
+        console.log('Google Sign In Successful:', result.user);
+      })
+      .catch((error) => {
+        console.error('Google Sign In Failed:', error);
+      });
+  }
+  const { register, handleSubmit, formState:{errors} } = useForm();
+  const onSubmit = (data) => {
+    // Handle login logic here
+    console.log('Login Data:', data);
+  };
   return (
-    /* Register ডেভ‑কার্ডের মতোই সাদা কার্ড, p‑10, shadow */
     <div className="w-full max-w-sm bg-white p-10 rounded-lg shadow-lg">
       {/* Logo + Brand text */}
       <div className="flex items-center gap-2 text-xl font-bold mb-6">
@@ -17,21 +33,29 @@ const Login = () => {
       <p className="mb-6 text-sm text-gray-500">Login with Profast</p>
 
       {/* Form */}
-      <form className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <input
           type="email"
           name="email"
+          {...register('email')}
           placeholder="Email"
           className="w-full px-4 py-2 border rounded"
           required
         />
         <input
           type="password"
-          name="password"
           placeholder="Password"
           className="w-full px-4 py-2 border rounded"
-          required
+          {...register('password', { required: true, minLength: 6 })}
         />
+
+        {errors.password && (
+          <span className="text-red-500 text-sm">
+            {errors.password.type === 'minLength'
+              ? 'Password must be at least 6 characters long'
+              : 'Password is required'}
+          </span>
+        )}
 
         {/* Forgot‑password link */}
         <div className="text-right">
@@ -52,16 +76,20 @@ const Login = () => {
       {/* Register link */}
       <p className="text-sm mt-4">
         Don&rsquo;t have an account?{' '}
-        <span className="text-lime-600 cursor-pointer font-medium hover:underline">
+        <Link
+          to="/register"
+          className="text-lime-600 cursor-pointer font-medium hover:underline"
+        >
           Register
-        </span>
+        </Link>
       </p>
 
       {/* Divider */}
       <div className="my-4 text-center text-gray-400">Or</div>
 
       {/* Google login */}
-      <button className="w-full flex items-center justify-center gap-2 py-2 border rounded bg-gray-100 hover:bg-gray-200">
+      <button onClick={handleGoogleSignIn}
+        className="w-full flex items-center justify-center gap-2 py-2 border rounded bg-gray-100 hover:bg-gray-200">
         <FcGoogle className="w-5 h-5" />
         Login with Google
       </button>

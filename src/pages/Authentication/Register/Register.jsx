@@ -1,11 +1,42 @@
-import React from 'react';
-import profast from '../../../assets/logo.png';
+import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
+import profast from '../../../assets/logo.png';
+import UseAuth from '../../../hooks/UseAuth';
+import { Link } from 'react-router';
 const Register = () => {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
+  const { createUser, googleSignin } = UseAuth();
+  const onSubmit = (data) => {
+    console.log('Registration Data:', data);
+    // console.log(createUser);
+    createUser(data.email, data.password)
+      .then((result) => {
+        console.log('User Created:', result.user);
+      })
+      .catch((error) => {
+        console.error('User creation failed:', error);
+      });
+  };
+
+
+  // Google Sign In Handler
+  const handleGoogleSignIn = () => {
+    googleSignin()
+      .then((result) => {
+        console.log('Google Sign In Successful:', result.user);
+      })
+      .catch((error) => {
+        console.error('Google Sign In Failed:', error);
+      });
+  };
   return (
     <div className="bg-white p-10 rounded-lg shadow-lg">
       {/* Logo */}
-      <div className='flex gap-2 text-xl font-bold'>
+      <div className="flex gap-2 text-xl font-bold">
         <img src={profast} alt="Profast Logo" className="h-8 mb-4" />
         <h2>Profast</h2>
       </div>
@@ -15,9 +46,10 @@ const Register = () => {
       <p className="mb-6 text-sm text-gray-500">Register with Profast</p>
 
       {/* Form */}
-      <form className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Name */}
         <input
+          {...register('name')}
           type="text"
           name="name"
           placeholder="Name"
@@ -25,6 +57,7 @@ const Register = () => {
         />
         {/* Email */}
         <input
+          {...register('email')}
           type="email"
           name="email"
           placeholder="Email"
@@ -32,13 +65,32 @@ const Register = () => {
         />
         {/* Password */}
         <input
+          {...register('password', {
+            required: true,
+            minLength: 6,
+            pattern: {
+              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/,
+              message:
+                'Password must include uppercase, lowercase, and a special character',
+            },
+          })}
           type="password"
           name="password"
           placeholder="Password"
           className="w-full px-4 py-2 border rounded"
         />
+        {/* Error Message for Password */}
+        {errors.password && (
+          <span className="text-red-500 text-sm">
+            {errors.password.type === 'minLength'
+              ? 'Password must be at least 6 characters long'
+              : errors.password.message}
+          </span>
+        )}
+
         {/* Photo URL */}
         <input
+          {...register('photoURL')}
           type="url"
           name="photoURL"
           placeholder="Photo URL"
@@ -57,14 +109,19 @@ const Register = () => {
       {/* Already have account */}
       <p className="text-sm mt-4">
         Already have an account?{' '}
-        <span className="text-lime-600 cursor-pointer font-medium">Login</span>
+        <Link to="/login" className="text-lime-600 hover:underline font-medium">
+          Login
+        </Link>
       </p>
 
       {/* OR Divider */}
       <div className="my-4 text-center text-gray-400">Or</div>
 
       {/* Google Register Button */}
-      <button className="w-full flex items-center justify-center gap-2 py-2 border rounded bg-gray-100 hover:bg-gray-200">
+      <button
+        onClick={handleGoogleSignIn}
+        className="w-full flex items-center justify-center gap-2 py-2 border rounded bg-gray-100 hover:bg-gray-200"
+      >
         <FcGoogle className="w-5 h-5" />
         Register with Google
       </button>

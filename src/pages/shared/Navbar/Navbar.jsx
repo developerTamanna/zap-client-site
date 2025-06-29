@@ -2,12 +2,18 @@
 import { useState } from 'react';
 import { FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi';
 import { Link, NavLink } from 'react-router';
+import UseAuth from '../../../hooks/UseAuth';
+
 
 const navItems = [
   { name: 'Services', to: '/services' },
   { name: 'Coverage', to: '/coverage' },
   { name: 'About Us', to: '/about' },
   { name: 'Pricing', to: '/pricing' },
+  { name: 'Contact', to: '/contact' },
+  { name: 'Be a Rider', to: '/rider-form' },
+  { name: 'Track Order', to: '/track-order' },
+  { name: 'Add Parcel', to: '/add-parcel' },
 ];
 
 const baseLink = 'text-sm transition-colors duration-150';
@@ -15,8 +21,13 @@ const activeLink =
   'bg-lime-300 text-gray-900 text-sm font-medium px-5 py-2 rounded-full hover:bg-lime-400';
 const inactiveLink = 'text-gray-700 hover:text-gray-900';
 
-const Navbar = () => {
+export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, logout } = UseAuth();
+
+  /*— avatar fallback —*/
+  const avatar =
+    user?.photoURL;
 
   return (
     <header className="bg-white shadow-sm">
@@ -27,7 +38,7 @@ const Navbar = () => {
           <span className="text-xl font-bold text-gray-800">Profast</span>
         </Link>
 
-        {/* Menu Links – Desktop */}
+        {/* Menu – Desktop */}
         <nav className="hidden lg:flex items-center gap-8">
           {navItems.map(({ name, to }) => (
             <NavLink
@@ -41,28 +52,59 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          <Link
-            to="/be-a-rider"
+          {/* <Link
+            to="/rider-form"
             className="bg-lime-300 text-gray-900 text-sm font-medium px-5 py-2 rounded-full hover:bg-lime-400"
           >
             Be a Rider
-          </Link>
+          </Link> */}
         </nav>
 
         {/* Actions – Desktop */}
         <div className="hidden lg:flex items-center gap-4">
-          <Link
-            to="/signin"
-            className="px-5 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-50"
-          >
-            Sign In
-          </Link>
-          <Link
-            to="/signup"
-            className="px-5 py-2 bg-lime-300 text-sm font-medium text-gray-900 rounded-lg hover:bg-lime-400"
-          >
-            Sign Up
-          </Link>
+          {user ? (
+            /* -------- logged‑in state -------- */
+            <>
+              {/* Avatar + tooltip */}
+              <div className="relative group">
+                <img
+                  src={avatar}
+                  alt="profile"
+                  referrerPolicy="no-referrer"
+                  className="w-10 h-10 rounded-full object-cover cursor-pointer"
+                />
+                <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs text-white bg-black/80 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                  {user.displayName || 'User'}
+                </span>
+              </div>
+
+              {/* Logout */}
+              <button
+                onClick={logout}
+                className="px-5 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-50"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            /* -------- logged‑out state -------- */
+            <>
+              <Link
+                to="/login"
+                className="px-5 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-50"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="px-5 py-2 bg-lime-300 text-sm font-medium text-gray-900 rounded-lg hover:bg-lime-400"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+
+          {/* Scroll‑top icon */}
           <a
             href="#top"
             className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800"
@@ -88,7 +130,7 @@ const Navbar = () => {
               <NavLink
                 key={to}
                 to={to}
-                onClick={() => setOpen(false)} // লিঙ্কে ক্লিক করলে মেনু বন্ধ
+                onClick={() => setOpen(false)}
                 className={({ isActive }) =>
                   `${baseLink} ${isActive ? activeLink : inactiveLink}`
                 }
@@ -105,34 +147,38 @@ const Navbar = () => {
               Be a Rider
             </Link>
 
-            {/* Mobile Action Buttons */}
-            <div className="flex gap-3 pt-2 w-full">
-              <Link
-                to="/signin"
-                onClick={() => setOpen(false)}
-                className="flex-1 px-4 py-2 border text-sm rounded-lg hover:bg-gray-50"
+            {/* --- Mobile auth buttons --- */}
+            {user ? (
+              <button
+                onClick={() => {
+                  logOut();
+                  setOpen(false);
+                }}
+                className="w-full px-4 py-2 border text-sm rounded-lg hover:bg-gray-50"
               >
-                Sign In
-              </Link>
-              <Link
-                to="/signup"
-                onClick={() => setOpen(false)}
-                className="flex-1 px-4 py-2 bg-lime-300 text-sm font-medium text-gray-900 rounded-lg hover:bg-lime-400"
-              >
-                Sign Up
-              </Link>
-              <a
-                href="#top"
-                className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800"
-              >
-                <FiArrowUpRight />
-              </a>
-            </div>
+                Logout
+              </button>
+            ) : (
+              <div className="flex gap-3 pt-2 w-full">
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 px-4 py-2 border text-sm rounded-lg hover:bg-gray-50"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 px-4 py-2 bg-lime-300 text-sm font-medium text-gray-900 rounded-lg hover:bg-lime-400"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
     </header>
   );
-};
-
-export default Navbar;
+}
