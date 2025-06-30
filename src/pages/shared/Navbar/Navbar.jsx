@@ -4,7 +4,6 @@ import { FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi';
 import { Link, NavLink } from 'react-router';
 import UseAuth from '../../../hooks/UseAuth';
 
-
 const navItems = [
   { name: 'Services', to: '/services' },
   { name: 'Coverage', to: '/coverage' },
@@ -25,9 +24,13 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { user, logout } = UseAuth();
 
-  /*— avatar fallback —*/
-  const avatar =
-    user?.photoURL;
+  // user থাকলে ড্যাশবোর্ড লিংক যুক্ত হবে
+  const menuItems = [
+    ...navItems,
+    ...(user ? [{ name: 'Dashboard', to: '/dashboard' }] : []),
+  ];
+
+  const avatar = user?.photoURL;
 
   return (
     <header className="bg-white shadow-sm">
@@ -40,7 +43,7 @@ export default function Navbar() {
 
         {/* Menu – Desktop */}
         <nav className="hidden lg:flex items-center gap-8">
-          {navItems.map(({ name, to }) => (
+          {menuItems.map(({ name, to }) => (
             <NavLink
               key={to}
               to={to}
@@ -51,21 +54,13 @@ export default function Navbar() {
               {name}
             </NavLink>
           ))}
-
-          {/* <Link
-            to="/rider-form"
-            className="bg-lime-300 text-gray-900 text-sm font-medium px-5 py-2 rounded-full hover:bg-lime-400"
-          >
-            Be a Rider
-          </Link> */}
         </nav>
 
         {/* Actions – Desktop */}
         <div className="hidden lg:flex items-center gap-4">
           {user ? (
-            /* -------- logged‑in state -------- */
             <>
-              {/* Avatar + tooltip */}
+              {/* Avatar */}
               <div className="relative group">
                 <img
                   src={avatar}
@@ -77,8 +72,6 @@ export default function Navbar() {
                   {user.displayName || 'User'}
                 </span>
               </div>
-
-              {/* Logout */}
               <button
                 onClick={logout}
                 className="px-5 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-50"
@@ -87,7 +80,6 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            /* -------- logged‑out state -------- */
             <>
               <Link
                 to="/login"
@@ -126,7 +118,7 @@ export default function Navbar() {
       {open && (
         <div className="lg:hidden border-t">
           <div className="flex flex-col items-start px-4 py-4 space-y-4 bg-white">
-            {navItems.map(({ name, to }) => (
+            {menuItems.map(({ name, to }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -139,19 +131,11 @@ export default function Navbar() {
               </NavLink>
             ))}
 
-            <Link
-              to="/be-a-rider"
-              onClick={() => setOpen(false)}
-              className="bg-lime-300 text-gray-900 text-sm font-medium px-4 py-2 rounded-full hover:bg-lime-400 w-full text-center"
-            >
-              Be a Rider
-            </Link>
-
-            {/* --- Mobile auth buttons --- */}
+            {/* Mobile auth buttons */}
             {user ? (
               <button
                 onClick={() => {
-                  logOut();
+                  logout();
                   setOpen(false);
                 }}
                 className="w-full px-4 py-2 border text-sm rounded-lg hover:bg-gray-50"

@@ -1,31 +1,32 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
 import { useLoaderData } from 'react-router';
+import toast, { Toaster } from 'react-hot-toast';
 import UseAuth from '../../hooks/UseAuth';
+import useAxiosSecure from '../../hooks/UseAxiosSecure';
 
+/* ---------- helper: tracking id ---------- */
 const generateTrackingId = () => {
-  const date = new Date();
-
-  // ① YYYYMMDD
-  const datePart = date.toISOString().split('T')[0].replace(/-/g, '');
-
-  // ② 5‑char random alphanumeric, uppercase
-  const randPart = Math.random().toString(36).substring(2, 7).toUpperCase();
-
-  // ③ final ID ⇒ PCL-20250630-AB12C
-  return `PCL-${datePart}-${randPart}`;
+  const datePart = new Date().toISOString().split('T')[0].replace(/-/g, ''); // YYYYMMDD
+  const randPart = Math.random().toString(36).substring(2, 7).toUpperCase(); // 5‑char
+  return `PCL-${datePart}-${randPart}`; // eg. PCL-20250630-9K7FQ
 };
 
-/* ---------- UI helpers ---------- */
+/* ---------- ui class ---------- */
 const cssInput =
   'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-500';
 
 /* ---------- pricing helper ---------- */
 const priceCalc = ({ parcelType, weight, sameRegion }) => {
-  // base charge
+  // base
   let base =
-    parcelType === 'document' ? (sameRegion ? 60 : 80) : sameRegion ? 110 : 150;
+    parcelType === 'document'
+      ? sameRegion
+        ? 60
+        : 80
+      : sameRegion
+      ? 110
+      : 150;
 
   let weightExtra = 0;
   let regionExtra = 0;
@@ -35,7 +36,7 @@ const priceCalc = ({ parcelType, weight, sameRegion }) => {
     if (kg > 3) {
       const extraKg = Math.ceil(kg - 3);
       weightExtra = extraKg * 40;
-      if (!sameRegion) regionExtra = 40; // outside‑region extra fee
+      if (!sameRegion) regionExtra = 40; // outside‑region flat fee
     }
   }
 
@@ -46,33 +47,28 @@ const priceCalc = ({ parcelType, weight, sameRegion }) => {
 };
 
 export default function AddParcel() {
-  /** JSON loaded by react‑router loader:
-   *  [
-   *   { region:'Mymensingh', district:'Sherpur', ... },
-   *   ...
-   *  ]
-   */
-  const serviceCenters = useLoaderData();
+  /* -------- JSON from route‑loader -------- */
+  const serviceCenters = useLoaderData(); // [{region:'...', district:'...'}, ...]
 
-  /* unique region list */
+  /* -------- unique region list -------- */
   const regions = useMemo(
     () => [...new Set(serviceCenters.map((c) => c.region))],
     [serviceCenters]
   );
 
-  /* react‑hook‑form */
+  /* -------- react‑hook‑form -------- */
   const {
     register,
     handleSubmit,
     watch,
     reset,
-    formState: { errors },
   } = useForm({ defaultValues: { parcelType: 'document' } });
 
-  //useAuth user import
+  /* -------- context & axios -------- */
   const { user } = UseAuth();
+  const axiosSecure = useAxiosSecure();
 
-  /* watch for dynamic dropdown */
+  /* -------- watched values -------- */
   const senderRegion = watch('senderRegion');
   const receiverRegion = watch('receiverRegion');
   const parcelType = watch('parcelType');
@@ -82,7 +78,7 @@ export default function AddParcel() {
     (c) => c.region === receiverRegion
   );
 
-  /* dialog state */
+  /* -------- modal state -------- */
   const [dialog, setDialog] = useState({
     open: false,
     cost: 0,
@@ -90,7 +86,7 @@ export default function AddParcel() {
     draft: null,
   });
 
-  /* ------------ submit → show break‑down ------------ */
+  /* -------- submit: show cost -------- */
   const onSubmit = (data) => {
     const { total, breakdown } = priceCalc({
       ...data,
@@ -100,23 +96,42 @@ export default function AddParcel() {
     toast(`Delivery cost: ৳${total}`, { icon: '💰' });
   };
 
-  /* ------------ confirm → save (here console.log) ---- */
-  const confirm = () => {
+  /* -------- confirm: save to backend -------- */
+  const confirm = async () => {
     const payload = {
       ...dialog.draft,
       delivery_cost: dialog.cost,
-      created_by: user?.email,
+      created_by: user?.email || 'guest',
       delivery_status: 'not collected',
       payment_status: 'unpaid',
       creation_date: new Date(),
       tracking_id: generateTrackingId(),
     };
-    console.log('Saved parcel:', payload); // ⬅️ replace with API POST
-    toast.success('Parcel confirmed!');
-    reset();
-    setDialog({ ...dialog, open: false });
+
+    try {
+      const { data } = await axiosSecure.post('/parcels', payload);
+
+      if (data?.insertedId) {
+        toast.success('Parcel added successfully!');
+        reset();
+        setDialog({
+          open: false,
+          cost: 0,
+          breakdown: { base: 0, weightExtra: 0, regionExtra: 0 },
+          draft: null,
+        });
+      } else {
+        toast.error('Server did not return an ID. Please try again.');
+      }
+    } catch (err) {
+      console.error('Parcel save failed:', err);
+      toast.error(err.response?.data?.message || 'Network / Server error');
+    }
   };
 
+  /* ======================================================= */
+  /* ===================   RENDER   ========================= */
+  /* ======================================================= */
   return (
     <div className="bg-white rounded-2xl p-6 md:p-10 max-w-6xl mx-auto mt-10 shadow-md">
       <Toaster position="top-center" />
@@ -126,11 +141,9 @@ export default function AddParcel() {
         Door‑to‑door service requires both pickup &amp; delivery details.
       </p>
 
-      {/* ===================================================== */}
-      {/* =====================   FORM   ====================== */}
-      {/* ===================================================== */}
+      {/* ------------------- FORM ------------------- */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-        {/* ---------- Parcel Info ---------- */}
+        {/* Parcel Info */}
         <section>
           <h3 className="text-lg font-semibold mb-2">Parcel Information</h3>
 
@@ -170,10 +183,9 @@ export default function AddParcel() {
           </div>
         </section>
 
-        {/* ---------- Sender ---------- */}
+        {/* Sender Info */}
         <section>
           <h3 className="font-semibold text-lg mb-2">Sender Information</h3>
-
           <div className="grid md:grid-cols-2 gap-4">
             <input
               placeholder="Name"
@@ -185,7 +197,6 @@ export default function AddParcel() {
               {...register('senderContact', { required: true })}
               className={cssInput}
             />
-
             <select
               {...register('senderRegion', { required: true })}
               className={cssInput}
@@ -195,7 +206,6 @@ export default function AddParcel() {
                 <option key={r}>{r}</option>
               ))}
             </select>
-
             <select
               {...register('senderService', { required: true })}
               className={cssInput}
@@ -205,7 +215,6 @@ export default function AddParcel() {
                 <option key={c.district}>{c.district}</option>
               ))}
             </select>
-
             <input
               placeholder="Address"
               {...register('senderAddress', { required: true })}
@@ -219,10 +228,9 @@ export default function AddParcel() {
           </div>
         </section>
 
-        {/* ---------- Receiver ---------- */}
+        {/* Receiver Info */}
         <section>
           <h3 className="font-semibold text-lg mb-2">Receiver Information</h3>
-
           <div className="grid md:grid-cols-2 gap-4">
             <input
               placeholder="Name"
@@ -234,7 +242,6 @@ export default function AddParcel() {
               {...register('receiverContact', { required: true })}
               className={cssInput}
             />
-
             <select
               {...register('receiverRegion', { required: true })}
               className={cssInput}
@@ -244,7 +251,6 @@ export default function AddParcel() {
                 <option key={r}>{r}</option>
               ))}
             </select>
-
             <select
               {...register('receiverService', { required: true })}
               className={cssInput}
@@ -254,7 +260,6 @@ export default function AddParcel() {
                 <option key={c.district}>{c.district}</option>
               ))}
             </select>
-
             <input
               placeholder="Address"
               {...register('receiverAddress', { required: true })}
@@ -276,9 +281,7 @@ export default function AddParcel() {
         </button>
       </form>
 
-      {/* ===================================================== */}
-      {/* ===============  BREAKDOWN DIALOG  ================== */}
-      {/* ===================================================== */}
+      {/* ------------------- BREAKDOWN MODAL ------------------- */}
       {dialog.open && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-96 text-center shadow-lg">
@@ -306,7 +309,7 @@ export default function AddParcel() {
                 </p>
               )}
               <hr />
-              <p className="font-bold text-lg">Total:&nbsp;৳{dialog.cost}</p>
+              <p className="font-bold text-lg">Total: ৳{dialog.cost}</p>
             </div>
 
             <div className="flex justify-center gap-3">
