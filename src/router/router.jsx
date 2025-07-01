@@ -17,6 +17,7 @@ import AddParcel from '../pages/AddParcel/AddParcel';
 import PrivateRoutes from '../routes/PrivateRouts'
 import DashboardLayout from '../layout/DashboardLayout';
 import MyParcels from '../pages/Dashboard/MyParcels/MyParcels';
+import Payment from '../pages/Dashboard/Payment/Payment';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -99,8 +100,13 @@ export const router = createBrowserRouter([
     children: [
       { path: 'myParcels', element: <MyParcels /> },
       // { path: 'item1', element: <Item1 /> }, // চাইলে আলাদা পেজ
+
       // { path: 'item2', element: <Item2 /> },
       // { index: true, element: <MyParcels /> }, // default route
+      {
+        path: 'payment/:parcelId',
+        Component: Payment,
+      }
     ],
   },
 ]);

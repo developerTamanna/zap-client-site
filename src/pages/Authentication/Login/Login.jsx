@@ -1,23 +1,40 @@
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
+import { Link, useLocation, useNavigate } from 'react-router';
 import profast from '../../../assets/logo.png';
-import { Link } from 'react-router';
 import UseAuth from '../../../hooks/UseAuth';
 
 const Login = () => {
-  const { googleSignin } = UseAuth();
+
+  const location = useLocation();
+  // const navigate = location.state?.from || '/'
+  const navigate = useNavigate();
+  const from = location.state?.from || '/';
+  const { googleSignin, signin } = UseAuth();
   const handleGoogleSignIn = () => {
     googleSignin()
       .then((result) => {
         console.log('Google Sign In Successful:', result.user);
+        navigate(from, { replace: true });
       })
       .catch((error) => {
         console.error('Google Sign In Failed:', error);
       });
-  }
-  const { register, handleSubmit, formState:{errors} } = useForm();
+  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const onSubmit = (data) => {
     // Handle login logic here
+    signin(data.email, data.password).then(result => {
+      console.log('Login Successful:', result.user);
+      navigate(from, { replace: true });
+    }).catch(error => {
+      console.error('Login Failed:', error);
+      // Handle login error (e.g., show a toast notification)
+    })
     console.log('Login Data:', data);
   };
   return (
@@ -88,8 +105,10 @@ const Login = () => {
       <div className="my-4 text-center text-gray-400">Or</div>
 
       {/* Google login */}
-      <button onClick={handleGoogleSignIn}
-        className="w-full flex items-center justify-center gap-2 py-2 border rounded bg-gray-100 hover:bg-gray-200">
+      <button
+        onClick={handleGoogleSignIn}
+        className="w-full flex items-center justify-center gap-2 py-2 border rounded bg-gray-100 hover:bg-gray-200"
+      >
         <FcGoogle className="w-5 h-5" />
         Login with Google
       </button>

@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
 import toast, { Toaster } from 'react-hot-toast';
 import UseAuth from '../../hooks/UseAuth';
-import useAxiosSecure from '../../hooks/UseAxiosSecure';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+
 
 /* ---------- helper: tracking id ---------- */
 const generateTrackingId = () => {
@@ -101,11 +102,12 @@ export default function AddParcel() {
     const payload = {
       ...dialog.draft,
       delivery_cost: dialog.cost,
-      created_by: user?.email || 'guest',
+      created_by: user?.email,
       delivery_status: 'not collected',
       payment_status: 'unpaid',
       creation_date: new Date(),
       tracking_id: generateTrackingId(),
+
     };
 
     try {
