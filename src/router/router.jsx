@@ -18,6 +18,9 @@ import PrivateRoutes from '../routes/PrivateRouts'
 import DashboardLayout from '../layout/DashboardLayout';
 import MyParcels from '../pages/Dashboard/MyParcels/MyParcels';
 import Payment from '../pages/Dashboard/Payment/Payment';
+import PaymentHistory from '../pages/Dashboard/PaymentHistory';
+import TrackPackage from '../pages/Dashboard/TrackPackage/TrackPackage';
+import UpdateProfile from '../pages/Dashboard/UpdateProfile/UpdateProfile';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -106,7 +109,19 @@ export const router = createBrowserRouter([
       {
         path: 'payment/:parcelId',
         Component: Payment,
-      }
+      },
+      {
+        path: 'paymentHistory',
+        Component: PaymentHistory,
+      },
+      {
+        path: 'track',
+        Component: TrackPackage,
+      },
+      {
+        path: 'update-profile',
+        Component: UpdateProfile,
+      },
     ],
   },
 ]);

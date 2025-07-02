@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router';
 import { FiMenu, FiX } from 'react-icons/fi';
+import {
+  FaHome,
+  FaBox,
+  FaCreditCard,
+  FaMapMarkerAlt,
+  FaUserEdit,
+} from 'react-icons/fa';
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -29,37 +36,46 @@ const DashboardLayout = () => {
           <li>
             <Link
               to="/"
-              className="block px-4 py-2 hover:bg-lime-600 rounded"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
               onClick={() => setSidebarOpen(false)}
             >
-              🏠 Back Home
+              <FaHome /> Back Home
             </Link>
           </li>
           <li>
             <Link
               to="/dashboard/myParcels"
-              className="block px-4 py-2 hover:bg-lime-600 rounded"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
               onClick={() => setSidebarOpen(false)}
             >
-              📦 My Parcels
+              <FaBox /> My Parcels
             </Link>
           </li>
           <li>
             <Link
-              to="/dashboard/item1"
-              className="block px-4 py-2 hover:bg-lime-600 rounded"
+              to="/dashboard/paymentHistory"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
               onClick={() => setSidebarOpen(false)}
             >
-              Sidebar Item 1
+              <FaCreditCard /> Payment History
             </Link>
           </li>
           <li>
             <Link
-              to="/dashboard/item2"
-              className="block px-4 py-2 hover:bg-lime-600 rounded"
+              to="/dashboard/track"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
               onClick={() => setSidebarOpen(false)}
             >
-              Sidebar Item 2
+              <FaMapMarkerAlt /> Track a Package
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/update-profile"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <FaUserEdit /> Update Profile
             </Link>
           </li>
         </ul>

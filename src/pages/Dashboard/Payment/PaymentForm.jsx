@@ -1,13 +1,16 @@
 // src/pages/Dashboard/PaymentForm.jsx
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import Swal from 'sweetalert2';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import UseAuth from '../../../hooks/UseAuth';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import Loading from '../../Loading';
 
 const PaymentForm = () => {
+  const navigate = useNavigate();
+
   /* ---------- hooks ---------- */
   const stripe = useStripe();
   const elements = useElements();
@@ -86,7 +89,39 @@ const PaymentForm = () => {
         setSuccessMessage('✅ Payment successful!');
         console.log('🎉 paymentIntent:', paymentIntent);
         // 👉 এখানেই DB/স্টেট আপডেট করো
-        
+        //step 4 mark parcel paid also create payment history
+        const paymentData = {
+          parcelId,
+          email: user.email,
+          amount: paymentIntent.amount,
+          transactionId: paymentIntent.id,
+          paymentMethod: paymentIntent.payment_method_types?.[0] || 'card',
+        };
+
+        const { data: paymentRes } = await axiosSecure.post(
+          '/payments',
+          paymentData
+        );
+
+        if (paymentRes.insertedId) {
+          const result = await Swal.fire({
+            icon: 'success',
+            title: 'Payment Successful!',
+            html: `
+              <p class="text-gray-700 mb-2">Txn ID:</p>
+              <h3 class="font-mono text-lg">${paymentIntent.id}</h3>
+            `,
+            confirmButtonText: 'Go to My Parcels',
+            cancelButtonText: 'Stay here',
+            showCancelButton: true, // ← Cancel button
+            allowOutsideClick: false,
+          });
+
+          if (result.isConfirmed) {
+            navigate('/dashboard/myParcels'); // ← সঠিক পাথ
+          }
+          /* Cancel চাপলে কিছুই হবে না — পেজে থেকে যাবে */
+        }
       }
     } catch (err) {
       setErrorMessage(err.message || 'Payment failed');
