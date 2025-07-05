@@ -1,27 +1,42 @@
+import axios from 'axios';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
+import { Link } from 'react-router';
 import profast from '../../../assets/logo.png';
 import UseAuth from '../../../hooks/UseAuth';
-import { Link } from 'react-router';
 const Register = () => {
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
-  const { createUser, googleSignin } = UseAuth();
+  const { createUser, googleSignin, updateUserProfile } = UseAuth();
+  const [profilePic, setProfilePic] = useState('');
   const onSubmit = (data) => {
     console.log('Registration Data:', data);
     // console.log(createUser);
     createUser(data.email, data.password)
       .then((result) => {
         console.log('User Created:', result.user);
+        //update userInfo in the database
+        //update user profile in firebase
+        const userProfile = {
+          displayName: data.name,
+          photoURL: profilePic,
+        };
+        updateUserProfile(userProfile)
+          .then(() => {
+          console.log('profile name pic updated')
+          })
+          .catch((error) => {
+          console.log(error)
+        })
       })
       .catch((error) => {
         console.error('User creation failed:', error);
       });
   };
-
 
   // Google Sign In Handler
   const handleGoogleSignIn = () => {
@@ -32,6 +47,18 @@ const Register = () => {
       .catch((error) => {
         console.error('Google Sign In Failed:', error);
       });
+  };
+
+  const handleImageUpload = async (e) => {
+    const image = e.target.files[0];
+    // console.log(image);
+    const formData = new FormData();
+    formData.append('image', image);
+    const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${
+      import.meta.env.VITE_image_upload_key
+    }`;
+    const res = await axios.post(imageUploadUrl, formData);
+    setProfilePic(res.data.data.url);
   };
   return (
     <div className="bg-white p-10 rounded-lg shadow-lg">
@@ -91,9 +118,10 @@ const Register = () => {
         {/* Photo URL */}
         <input
           {...register('photoURL')}
-          type="url"
-          name="photoURL"
-          placeholder="Photo URL"
+          onChange={handleImageUpload}
+          type="file"
+          // name="photoURL"
+          placeholder="upload file"
           className="w-full px-4 py-2 border rounded"
         />
 
