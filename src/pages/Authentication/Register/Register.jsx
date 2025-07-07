@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
-import { Link } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import profast from '../../../assets/logo.png';
 import UseAuth from '../../../hooks/UseAuth';
 import useAxios from '../../../hooks/useAxios';
@@ -15,6 +15,10 @@ const Register = () => {
   const { createUser, googleSignin, updateUserProfile } = UseAuth();
   const [profilePic, setProfilePic] = useState('');
   const axiosInstance = useAxios();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location.state?.from?.pathname || '/';
+
   const onSubmit = (data) => {
     console.log('Registration Data:', data);
     // console.log(createUser);
@@ -38,6 +42,7 @@ const Register = () => {
         updateUserProfile(userProfile)
           .then(() => {
             console.log('profile name pic updated');
+            navigate(from, { replace: true });
           })
           .catch((error) => {
             console.log(error);
@@ -63,6 +68,8 @@ const Register = () => {
         };
         const res = await axiosInstance.post('/users', userInfo);
         console.log('user update info', res.data);
+        navigate(from, { replace: true });
+
       })
       .catch((error) => {
         console.error('Google Sign In Failed:', error);

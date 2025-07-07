@@ -26,8 +26,8 @@ const PendingRiders = () => {
 
   /* ------------ approve / reject mutation ------------ */
   const updateStatus = useMutation({
-    mutationFn: ({ id, status }) =>
-      axiosSecure.patch(`/riders/${id}`, { status }),
+    mutationFn: ({ id, status, email }) =>
+      axiosSecure.patch(`/riders/${id}/status`, { status, email }),
     onSuccess: () => {
       toast.success('Status updated');
       queryClient.invalidateQueries(['pending-riders']);
@@ -135,7 +135,11 @@ const PendingRiders = () => {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() =>
-                  updateStatus.mutate({ id: selected._id, status: 'active' })
+                  updateStatus.mutate({
+                    id: selected._id,
+                    status: 'active',
+                    email: selected.email,
+                  })
                 }
                 className="px-4 py-2 bg-lime-500 text-white rounded hover:bg-lime-600 text-sm"
               >
@@ -143,7 +147,11 @@ const PendingRiders = () => {
               </button>
               <button
                 onClick={() =>
-                  updateStatus.mutate({ id: selected._id, status: 'rejected' })
+                  updateStatus.mutate({
+                    id: selected._id,
+                    status: 'rejected',
+                    email: selected.email,
+                  })
                 }
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
               >
