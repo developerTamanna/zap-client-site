@@ -3,9 +3,10 @@ import { FcGoogle } from 'react-icons/fc';
 import { Link, useLocation, useNavigate } from 'react-router';
 import profast from '../../../assets/logo.png';
 import UseAuth from '../../../hooks/UseAuth';
+import useAxios from '../../../hooks/useAxios';
 
 const Login = () => {
-
+  const axiosInstance = useAxios();
   const location = useLocation();
   // const navigate = location.state?.from || '/'
   const navigate = useNavigate();
@@ -13,14 +14,35 @@ const Login = () => {
   const { googleSignin, signin } = UseAuth();
   const handleGoogleSignIn = () => {
     googleSignin()
-      .then((result) => {
-        console.log('Google Sign In Successful:', result.user);
-        navigate(from, { replace: true });
+      .then(async (result) => {
+        const user = result.user; // ← Firebase user object
+
+        // 1️⃣ লগ দেখো
+        console.log('Google Sign‑In Successful:', user);
+
+        // 2️⃣ MongoDB‑তে পাঠানোর জন্য ইনফো
+        const userInfo = {
+          email: user.email,
+          // name: user.displayName || 'Anonymous',
+          // photo: user.photoURL || 'https://i.ibb.co/placeholder.jpg',
+          role: 'user',
+          created_at: new Date().toISOString(),
+          last_log_in: new Date().toISOString(),
+        };
+
+        // 3️⃣ POST /users  (insert if not exists)
+        const res = await axiosInstance.post('/users', userInfo);
+        console.log('User saved/exists:', res.data);
+
+        // 4️⃣ রিডাইরেক্ট
+        navigate(from || '/', { replace: true });
       })
       .catch((error) => {
-        console.error('Google Sign In Failed:', error);
+        console.error('Google Sign‑In Failed:', error);
+        toast.error(error.message);
       });
   };
+
   const {
     register,
     handleSubmit,
@@ -28,13 +50,15 @@ const Login = () => {
   } = useForm();
   const onSubmit = (data) => {
     // Handle login logic here
-    signin(data.email, data.password).then(result => {
-      console.log('Login Successful:', result.user);
-      navigate(from, { replace: true });
-    }).catch(error => {
-      console.error('Login Failed:', error);
-      // Handle login error (e.g., show a toast notification)
-    })
+    signin(data.email, data.password)
+      .then((result) => {
+        console.log('Login Successful:', result.user);
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        console.error('Login Failed:', error);
+        // Handle login error (e.g., show a toast notification)
+      });
     console.log('Login Data:', data);
   };
   return (

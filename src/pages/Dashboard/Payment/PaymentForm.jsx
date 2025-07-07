@@ -5,8 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import UseAuth from '../../../hooks/UseAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+// import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import Loading from '../../Loading';
+import useAxiosSecure from '../../../hooks/UseAxiosSecure';
 
 const PaymentForm = () => {
   const navigate = useNavigate();

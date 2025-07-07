@@ -1,26 +1,28 @@
 import { createBrowserRouter } from 'react-router';
 import AuthLayout from '../layout/AuthLayout';
+import DashboardLayout from '../layout/DashboardLayout';
 import RootLayout from '../layout/RootLayout';
+import AboutUs from '../pages/AboutUs/AboutUs';
+import AddParcel from '../pages/AddParcel/AddParcel';
 import ForgotPassword from '../pages/Authentication/ForgotPassword/ForgotPassword';
 import Login from '../pages/Authentication/Login/Login';
 import Register from '../pages/Authentication/Register/Register';
-import Home from '../pages/Home/Home/Home';
 import VerifyCode from '../pages/Authentication/VerifyCode/VerifyCode';
-import Coverage from '../pages/Coverage/Coverage';
-import RiderForm from '../pages/RiderForm/RiderForm';
-import TrackOrder from '../pages/TrackOrder/TrackOrder';
-import Pricing from '../pages/Pricing/Pricing';
 import Contact from '../pages/Contact/Contact';
-import AboutUs from '../pages/AboutUs/AboutUs';
-import Services from '../pages/Services/Services';
-import AddParcel from '../pages/AddParcel/AddParcel';
-import PrivateRoutes from '../routes/PrivateRouts'
-import DashboardLayout from '../layout/DashboardLayout';
+import Coverage from '../pages/Coverage/Coverage';
 import MyParcels from '../pages/Dashboard/MyParcels/MyParcels';
 import Payment from '../pages/Dashboard/Payment/Payment';
 import PaymentHistory from '../pages/Dashboard/PaymentHistory';
 import TrackPackage from '../pages/Dashboard/TrackPackage/TrackPackage';
 import UpdateProfile from '../pages/Dashboard/UpdateProfile/UpdateProfile';
+import Home from '../pages/Home/Home/Home';
+import Pricing from '../pages/Pricing/Pricing';
+import RiderForm from '../pages/RiderForm/RiderForm';
+import Services from '../pages/Services/Services';
+import TrackOrder from '../pages/TrackOrder/TrackOrder';
+import PrivateRoutes from '../routes/PrivateRouts';
+import PendingRiders from '../pages/Dashboard/PendingRiders/PendingRiders';
+import ActiveRiders from '../pages/Dashboard/ActiveRiders/ActiveRiders';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -37,7 +39,13 @@ export const router = createBrowserRouter([
       },
       {
         path: 'rider-form',
-        Component: RiderForm,
+        // Component: RiderForm,
+        element: (
+          <PrivateRoutes>
+            <RiderForm />
+          </PrivateRoutes>
+        ),
+        loader: () => fetch('/serviceCenter.json'),
       },
       {
         path: 'track-order',
@@ -121,6 +129,14 @@ export const router = createBrowserRouter([
       {
         path: 'update-profile',
         Component: UpdateProfile,
+      },
+      {
+        path: 'pending-riders',
+        Component: PendingRiders,
+      },
+      {
+        path: 'active-riders',
+        Component: ActiveRiders,
       },
     ],
   },

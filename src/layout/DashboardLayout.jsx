@@ -7,6 +7,8 @@ import {
   FaCreditCard,
   FaMapMarkerAlt,
   FaUserEdit,
+  FaUserCheck,
+  FaUserClock,
 } from 'react-icons/fa';
 
 const DashboardLayout = () => {
@@ -76,6 +78,24 @@ const DashboardLayout = () => {
               onClick={() => setSidebarOpen(false)}
             >
               <FaUserEdit /> Update Profile
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/active-riders"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <FaUserCheck /> Active Riders
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/pending-riders"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <FaUserClock /> Pending Riders
             </Link>
           </li>
         </ul>

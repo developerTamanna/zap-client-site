@@ -1,9 +1,10 @@
-import { Link, useNavigate } from 'react-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast, { Toaster } from 'react-hot-toast';
 import { IoCubeOutline } from 'react-icons/io5';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router';
 import UseAuth from '../../../hooks/UseAuth';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import useAxiosSecure from '../../../hooks/UseAxiosSecure';
+// import useAxiosSecure from '../../../hooks/useAxiosSecure';
 
 const MyParcels = () => {
   const { user } = UseAuth();
@@ -29,7 +30,7 @@ const MyParcels = () => {
   const handlePay = (id) => {
     console.log('Pay for parcel:', id);
     navigate(`/dashboard/payment/${id}`);
-  }
+  };
   /* ---------- delete mutation (optimistic) ---------- */
   const deleteMutation = useMutation({
     mutationFn: (id) => axiosSecure.delete(`/parcels/${id}`),

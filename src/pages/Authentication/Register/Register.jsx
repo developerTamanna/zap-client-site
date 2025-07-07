@@ -5,6 +5,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { Link } from 'react-router';
 import profast from '../../../assets/logo.png';
 import UseAuth from '../../../hooks/UseAuth';
+import useAxios from '../../../hooks/useAxios';
 const Register = () => {
   const {
     register,
@@ -13,13 +14,22 @@ const Register = () => {
   } = useForm();
   const { createUser, googleSignin, updateUserProfile } = UseAuth();
   const [profilePic, setProfilePic] = useState('');
+  const axiosInstance = useAxios();
   const onSubmit = (data) => {
     console.log('Registration Data:', data);
     // console.log(createUser);
     createUser(data.email, data.password)
-      .then((result) => {
+      .then(async (result) => {
         console.log('User Created:', result.user);
         //update userInfo in the database
+        const userInfo = {
+          email: data.email,
+          role: 'user', // default role
+          created_at: new Date().toISOString(),
+          last_log_in: new Date().toISOString(),
+        };
+        const userRes = await axiosInstance.post('/users', userInfo);
+        console.log(userRes.data);
         //update user profile in firebase
         const userProfile = {
           displayName: data.name,
@@ -27,11 +37,11 @@ const Register = () => {
         };
         updateUserProfile(userProfile)
           .then(() => {
-          console.log('profile name pic updated')
+            console.log('profile name pic updated');
           })
           .catch((error) => {
-          console.log(error)
-        })
+            console.log(error);
+          });
       })
       .catch((error) => {
         console.error('User creation failed:', error);
@@ -41,8 +51,18 @@ const Register = () => {
   // Google Sign In Handler
   const handleGoogleSignIn = () => {
     googleSignin()
-      .then((result) => {
+      .then(async (result) => {
+        const user = result.user;
         console.log('Google Sign In Successful:', result.user);
+        //update user info in the db
+        const userInfo = {
+          email: user.email,
+          role: 'user', // default role
+          created_at: new Date().toISOString(),
+          last_log_in: new Date().toISOString(),
+        };
+        const res = await axiosInstance.post('/users', userInfo);
+        console.log('user update info', res.data);
       })
       .catch((error) => {
         console.error('Google Sign In Failed:', error);
