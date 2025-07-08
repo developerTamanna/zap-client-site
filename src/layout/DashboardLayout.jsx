@@ -9,6 +9,7 @@ import {
   FaUserEdit,
   FaUserCheck,
   FaUserClock,
+  FaUserShield,
 } from 'react-icons/fa';
 
 const DashboardLayout = () => {
@@ -96,6 +97,15 @@ const DashboardLayout = () => {
               onClick={() => setSidebarOpen(false)}
             >
               <FaUserClock /> Pending Riders
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard/make-admin"
+              className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <FaUserShield /> Make&nbsp;Admin
             </Link>
           </li>
         </ul>

@@ -10,9 +10,12 @@ import Register from '../pages/Authentication/Register/Register';
 import VerifyCode from '../pages/Authentication/VerifyCode/VerifyCode';
 import Contact from '../pages/Contact/Contact';
 import Coverage from '../pages/Coverage/Coverage';
+import ActiveRiders from '../pages/Dashboard/ActiveRiders/ActiveRiders';
+import MakeAdmin from '../pages/Dashboard/MakeAdmin/MakeAdmin';
 import MyParcels from '../pages/Dashboard/MyParcels/MyParcels';
 import Payment from '../pages/Dashboard/Payment/Payment';
 import PaymentHistory from '../pages/Dashboard/PaymentHistory';
+import PendingRiders from '../pages/Dashboard/PendingRiders/PendingRiders';
 import TrackPackage from '../pages/Dashboard/TrackPackage/TrackPackage';
 import UpdateProfile from '../pages/Dashboard/UpdateProfile/UpdateProfile';
 import Home from '../pages/Home/Home/Home';
@@ -21,8 +24,6 @@ import RiderForm from '../pages/RiderForm/RiderForm';
 import Services from '../pages/Services/Services';
 import TrackOrder from '../pages/TrackOrder/TrackOrder';
 import PrivateRoutes from '../routes/PrivateRouts';
-import PendingRiders from '../pages/Dashboard/PendingRiders/PendingRiders';
-import ActiveRiders from '../pages/Dashboard/ActiveRiders/ActiveRiders';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -137,6 +138,10 @@ export const router = createBrowserRouter([
       {
         path: 'active-riders',
         Component: ActiveRiders,
+      },
+      {
+        path: 'make-admin',
+        Component: MakeAdmin,
       },
     ],
   },
