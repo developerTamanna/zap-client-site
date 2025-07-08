@@ -11,6 +11,7 @@ import {
   FaUserCheck,
   FaUserClock,
   FaUserShield,
+  FaUsersCog,
 } from 'react-icons/fa';
 import useUserRole from '../hooks/useUserRole';
 
@@ -126,6 +127,15 @@ const DashboardLayout = () => {
                   <FaUserShield /> Make&nbsp;Admin
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/dashboard/assign-rider"
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <FaUsersCog /> Assign Rider
+                </Link>
+              </li>
             </>
           )}
         </ul>
@@ -158,3 +168,6 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+
+
+

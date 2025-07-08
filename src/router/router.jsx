@@ -11,6 +11,7 @@ import VerifyCode from '../pages/Authentication/VerifyCode/VerifyCode';
 import Contact from '../pages/Contact/Contact';
 import Coverage from '../pages/Coverage/Coverage';
 import ActiveRiders from '../pages/Dashboard/ActiveRiders/ActiveRiders';
+import AssignRider from '../pages/Dashboard/AssignRider/AssignRider';
 import MakeAdmin from '../pages/Dashboard/MakeAdmin/MakeAdmin';
 import MyParcels from '../pages/Dashboard/MyParcels/MyParcels';
 import Payment from '../pages/Dashboard/Payment/Payment';
@@ -18,11 +19,13 @@ import PaymentHistory from '../pages/Dashboard/PaymentHistory';
 import PendingRiders from '../pages/Dashboard/PendingRiders/PendingRiders';
 import TrackPackage from '../pages/Dashboard/TrackPackage/TrackPackage';
 import UpdateProfile from '../pages/Dashboard/UpdateProfile/UpdateProfile';
+import Forbidden from '../pages/Forbidden/Forbidden';
 import Home from '../pages/Home/Home/Home';
 import Pricing from '../pages/Pricing/Pricing';
 import RiderForm from '../pages/RiderForm/RiderForm';
 import Services from '../pages/Services/Services';
 import TrackOrder from '../pages/TrackOrder/TrackOrder';
+import AdminRoute from '../routes/AdminRoute';
 import PrivateRoutes from '../routes/PrivateRouts';
 export const router = createBrowserRouter([
   {
@@ -37,6 +40,10 @@ export const router = createBrowserRouter([
         path: 'coverage',
         Component: Coverage,
         loader: () => fetch('./serviceCenter.json'),
+      },
+      {
+        path: 'forbidden',
+        Component: Forbidden,
       },
       {
         path: 'rider-form',
@@ -133,15 +140,38 @@ export const router = createBrowserRouter([
       },
       {
         path: 'pending-riders',
-        Component: PendingRiders,
+        // Component: PendingRiders,
+        element: (
+          <AdminRoute>
+            <PendingRiders></PendingRiders>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'assign-rider',
+        element: (
+          <AdminRoute>
+            <AssignRider></AssignRider>
+          </AdminRoute>
+        ),
       },
       {
         path: 'active-riders',
-        Component: ActiveRiders,
+        // Component: ActiveRiders,
+        element: (
+          <AdminRoute>
+            <ActiveRiders></ActiveRiders>
+          </AdminRoute>
+        ),
       },
       {
         path: 'make-admin',
-        Component: MakeAdmin,
+        // Component: MakeAdmin,
+        element: (
+          <AdminRoute>
+            <MakeAdmin></MakeAdmin>
+          </AdminRoute>
+        ),
       },
     ],
   },
