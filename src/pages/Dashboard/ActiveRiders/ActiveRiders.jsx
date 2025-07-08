@@ -29,7 +29,7 @@ const ActiveRiders = () => {
   /* ---------- deactivate mutation ---------- */
   const deactivateMutation = useMutation({
     mutationFn: (id) =>
-      axiosSecure.patch(`/riders/${id}`, { status: 'inactive' }),
+      axiosSecure.patch(`/riders/${id}/status`, { status: 'inactive' }),
     onSuccess: () => {
       toast.success('Rider deactivated');
       queryClient.invalidateQueries(['active-riders']);
