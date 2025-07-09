@@ -38,8 +38,11 @@ const AssignRider = () => {
     try {
       const { data } = await axiosSecure.get('/riders/available', {
         params: { district: p.senderService },
+
       });
       setRiders(data);
+      console.log(data)
+      console.log(p.senderService)
     } catch {
       toast.error('Failed to load riders');
     } finally {
