@@ -12,10 +12,12 @@ import Contact from '../pages/Contact/Contact';
 import Coverage from '../pages/Coverage/Coverage';
 import ActiveRiders from '../pages/Dashboard/ActiveRiders/ActiveRiders';
 import AssignRider from '../pages/Dashboard/AssignRider/AssignRider';
+import CompletedDeliveries from '../pages/Dashboard/CompletedDeliveries/CompletedDeliveries';
 import MakeAdmin from '../pages/Dashboard/MakeAdmin/MakeAdmin';
 import MyParcels from '../pages/Dashboard/MyParcels/MyParcels';
 import Payment from '../pages/Dashboard/Payment/Payment';
 import PaymentHistory from '../pages/Dashboard/PaymentHistory';
+import PendingDeliveries from '../pages/Dashboard/PendingDeliveries/PendingDeliveries';
 import PendingRiders from '../pages/Dashboard/PendingRiders/PendingRiders';
 import TrackPackage from '../pages/Dashboard/TrackPackage/TrackPackage';
 import UpdateProfile from '../pages/Dashboard/UpdateProfile/UpdateProfile';
@@ -27,6 +29,7 @@ import Services from '../pages/Services/Services';
 import TrackOrder from '../pages/TrackOrder/TrackOrder';
 import AdminRoute from '../routes/AdminRoute';
 import PrivateRoutes from '../routes/PrivateRouts';
+import RiderRoute from '../routes/RiderRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -138,9 +141,9 @@ export const router = createBrowserRouter([
         path: 'update-profile',
         Component: UpdateProfile,
       },
+      //admin only routes
       {
         path: 'pending-riders',
-        // Component: PendingRiders,
         element: (
           <AdminRoute>
             <PendingRiders></PendingRiders>
@@ -171,6 +174,24 @@ export const router = createBrowserRouter([
           <AdminRoute>
             <MakeAdmin></MakeAdmin>
           </AdminRoute>
+        ),
+      },
+
+      //rider only routes
+      {
+        path: 'pending-deliveries',
+        element: (
+          <RiderRoute>
+            <PendingDeliveries></PendingDeliveries>
+          </RiderRoute>
+        ),
+      },
+      {
+        path: 'completed-deliveries',
+        element: (
+          <RiderRoute>
+            <CompletedDeliveries></CompletedDeliveries>
+          </RiderRoute>
         ),
       },
     ],

@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLoaderData } from 'react-router';
 import toast, { Toaster } from 'react-hot-toast';
+import { useLoaderData, useNavigate } from 'react-router';
 import UseAuth from '../../hooks/UseAuth';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
-
+import useAxiosSecure from '../../hooks/UseAxiosSecure';
 
 /* ---------- helper: tracking id ---------- */
 const generateTrackingId = () => {
@@ -21,13 +20,7 @@ const cssInput =
 const priceCalc = ({ parcelType, weight, sameRegion }) => {
   // base
   let base =
-    parcelType === 'document'
-      ? sameRegion
-        ? 60
-        : 80
-      : sameRegion
-      ? 110
-      : 150;
+    parcelType === 'document' ? (sameRegion ? 60 : 80) : sameRegion ? 110 : 150;
 
   let weightExtra = 0;
   let regionExtra = 0;
@@ -58,16 +51,14 @@ export default function AddParcel() {
   );
 
   /* -------- react‑hook‑form -------- */
-  const {
-    register,
-    handleSubmit,
-    watch,
-    reset,
-  } = useForm({ defaultValues: { parcelType: 'document' } });
+  const { register, handleSubmit, watch, reset } = useForm({
+    defaultValues: { parcelType: 'document' },
+  });
 
   /* -------- context & axios -------- */
   const { user } = UseAuth();
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   /* -------- watched values -------- */
   const senderRegion = watch('senderRegion');
@@ -107,7 +98,6 @@ export default function AddParcel() {
       payment_status: 'unpaid',
       creation_date: new Date(),
       tracking_id: generateTrackingId(),
-
     };
 
     try {
@@ -115,6 +105,7 @@ export default function AddParcel() {
 
       if (data?.insertedId) {
         toast.success('Parcel added successfully!');
+        navigate('/dashboard/myParcels');
         reset();
         setDialog({
           open: false,

@@ -55,6 +55,7 @@ const AssignRider = () => {
     mutationFn: ({ parcelId, rider }) =>
       axiosSecure.patch(`/parcels/${parcelId}/assign`, {
         riderId: rider._id,
+        riderEmail: rider.email,
         riderName: rider.name,
       }),
     onSuccess: () => {

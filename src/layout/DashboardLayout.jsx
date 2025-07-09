@@ -12,6 +12,8 @@ import {
   FaUserClock,
   FaUserShield,
   FaUsersCog,
+  FaClipboardList,
+  FaCheckCircle,
 } from 'react-icons/fa';
 import useUserRole from '../hooks/useUserRole';
 
@@ -95,6 +97,27 @@ const DashboardLayout = () => {
             </Link>
           </li>
 
+          {/* rider links */}
+          {!isRoleLoading && role === 'rider' && (
+            <>
+              <li>
+                <Link
+                  to="/dashboard/pending-deliveries" // ⬅️ যে রাউটে পেজ বানাবে
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <FaClipboardList /> Pending Deliveries {/* ✅ উপযুক্ত আইকন */}
+                </Link>
+              </li>
+              <Link
+                to="/dashboard/completed-deliveries"
+                className="flex items-center gap-2 px-4 py-2 hover:bg-lime-600 rounded"
+              >
+                <FaCheckCircle className="text-white" />
+                Completed Deliveries
+              </Link>
+            </>
+          )}
           {/* ----- admin‑only links ----- */}
           {!isRoleLoading && role === 'admin' && (
             <>
@@ -168,6 +191,11 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+
+
+
+
+
 
 
 
